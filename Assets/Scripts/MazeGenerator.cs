@@ -7,6 +7,12 @@ public class MazeGenerator : MonoBehaviour
     [SerializeField] MazeNode nodePrefab;
     [SerializeField] Vector2Int mazeSize;
     [SerializeField] GameObject playerPrefab;
+    [SerializeField] private GameObject speedBoostPrefab;
+    [SerializeField] private int numberOfBoosts = 5;
+    
+    [SerializeField] private Material wallGenerationMaterial;
+    [SerializeField] private Material wallsMaterial;
+
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
@@ -27,6 +33,14 @@ public class MazeGenerator : MonoBehaviour
                 yield return null;
             }
 
+        }
+        
+        // apply "Wall Generation" material to all maze node floors at start
+        foreach (var node in nodes)
+        {
+            var renderer = node.GetComponentInChildren<MeshRenderer>();
+            if (renderer != null && wallGenerationMaterial != null)
+                renderer.material = wallGenerationMaterial;
         }
 
         List<MazeNode> currentPath = new List<MazeNode>();
@@ -131,7 +145,7 @@ public class MazeGenerator : MonoBehaviour
             yield return null;
         }
 
-        Vector3 startPos = new Vector3(-(mazeSize.x / 2f), 0.5f, -(mazeSize.y / 2f));
+        Vector3 startPos = new Vector3(-(mazeSize.x / 2f), 0f, -(mazeSize.y / 2f));
         GameObject player = Instantiate(playerPrefab, startPos, Quaternion.identity);
 
         Renderer playerRenderer = player.GetComponent<Renderer>();
@@ -142,8 +156,24 @@ public class MazeGenerator : MonoBehaviour
         if (cam)
             cam.target = player.transform;
 
+        for (int i = 0; i < numberOfBoosts; i++)
+        {
+            int randomX = Random.Range(0, mazeSize.x);
+            int randomY = Random.Range(0, mazeSize.y);
+            Vector3 pos = new Vector3(randomX - (mazeSize.x / 2f), 0.1f, randomY - (mazeSize.y / 2f));
+            Instantiate(speedBoostPrefab, pos, Quaternion.identity);
+        }
+        
+        // switch to final wall material once the maze is ready
+        foreach (var node in nodes)
+        {
+            var renderer = node.GetComponentInChildren<MeshRenderer>();
+            if (renderer != null && wallsMaterial != null)
+                renderer.material = wallsMaterial;
+        }
 
-
+        
+        
     }
     
     void GenerateMazeInstant(Vector2Int size)

@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
@@ -11,15 +12,15 @@ public class PlayerController : MonoBehaviour
     private Vector3 moveInput;
     private Vector3 moveVelocity;
 
+    public bool IsBoosted { get; private set; } = false;
+
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-
         rb.useGravity = false;
         rb.constraints = RigidbodyConstraints.FreezeRotationX |
                          RigidbodyConstraints.FreezeRotationZ |
                          RigidbodyConstraints.FreezePositionY;
-        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
     }
 
     void Update()
@@ -29,13 +30,34 @@ public class PlayerController : MonoBehaviour
 
         moveInput = new Vector3(moveX, 0f, moveZ).normalized;
         moveVelocity = moveInput * moveSpeed;
+
+        // Fix the rotation
+        transform.rotation = Quaternion.identity;
     }
 
     void FixedUpdate()
     {
-        Vector3 newPosition = rb.position + moveVelocity * Time.fixedDeltaTime;
-        newPosition.y = fixedY;
+        rb.linearVelocity = new Vector3(moveVelocity.x, 0f, moveVelocity.z);
+        rb.position = new Vector3(rb.position.x, fixedY, rb.position.z);
+    }
 
-        rb.MovePosition(newPosition);
+    public IEnumerator ApplySpeedBoost(float boostAmount, float duration)
+    {
+        if (IsBoosted)
+            yield break;
+
+        IsBoosted = true;
+        float originalSpeed = moveSpeed;
+        moveSpeed *= boostAmount;
+
+        Renderer rend = GetComponent<Renderer>();
+        Color originalColor = rend.material.color;
+        rend.material.color = Color.yellow;
+
+        yield return new WaitForSeconds(duration);
+
+        moveSpeed = originalSpeed;
+        IsBoosted = false;
+        rend.material.color = originalColor;
     }
 }

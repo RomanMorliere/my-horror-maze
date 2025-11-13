@@ -24,10 +24,10 @@ public class MazeNode : MonoBehaviour
                 floor.material.color = Color.white;
                 break;
             case NodeState.Current:
-                floor.material.color = Color.yellow;
+                floor.material.color = Color.deepPink;
                 break;
             case NodeState.Completed:
-                floor.material.color = Color.blue;
+                floor.material.color = Color.black;
                 break;
         }  
 
