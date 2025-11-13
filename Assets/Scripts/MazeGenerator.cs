@@ -4,25 +4,34 @@ using UnityEngine;
 
 public class MazeGenerator : MonoBehaviour
 {
+    [Header("Prefabs & Materials")]
     [SerializeField] MazeNode nodePrefab;
     [SerializeField] Vector2Int mazeSize;
     [SerializeField] GameObject playerPrefab;
-    [SerializeField] private GameObject speedBoostPrefab;
-    [SerializeField] private int numberOfBoosts = 5;
-    
-    [SerializeField] private Material wallGenerationMaterial;
-    [SerializeField] private Material wallsMaterial;
+    [SerializeField] GameObject speedBoostPrefab;
+    [SerializeField] int numberOfBoosts = 5;
+    [SerializeField] Material wallGenerationMaterial;
+    [SerializeField] Material wallsMaterial;
+    [SerializeField] GameObject enemyPrefab;
 
-    
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    // ---- Pathfinding stuff ----
+    private MazeNode[,] mazeGrid;
+    private Pathfinder pathfinder;
+    private EnemyAI_Follow enemyAI;
+    private Transform player;
+
     private void Start()
     {
-        //GenerateMazeInstant(mazeSize);
         StartCoroutine(GenerateMaze(mazeSize));
     }
+
     IEnumerator GenerateMaze(Vector2Int size)
     {
         List<MazeNode> nodes = new List<MazeNode>();
+
+        // ---------------------------
+        // 1. CREATE GRID (animated)
+        // ---------------------------
         for (int x = 0; x < size.x; x++)
         {
             for (int y = 0; y < size.y; y++)
@@ -30,12 +39,13 @@ public class MazeGenerator : MonoBehaviour
                 Vector3 nodePos = new Vector3(x - (size.x / 2f), 0, y - (size.y / 2f));
                 MazeNode newNode = Instantiate(nodePrefab, nodePos, Quaternion.identity, transform);
                 nodes.Add(newNode);
-                yield return null;
+                yield return null;         // <-- nice build animation
             }
-
         }
-        
-        // apply "Wall Generation" material to all maze node floors at start
+
+        // ---------------------------
+        // 2. APPLY "GENERATION" MATERIAL
+        // ---------------------------
         foreach (var node in nodes)
         {
             var renderer = node.GetComponentInChildren<MeshRenderer>();
@@ -43,6 +53,9 @@ public class MazeGenerator : MonoBehaviour
                 renderer.material = wallGenerationMaterial;
         }
 
+        // ---------------------------
+        // 3. CARVE MAZE (original algo)
+        // ---------------------------
         List<MazeNode> currentPath = new List<MazeNode>();
         List<MazeNode> completedNodes = new List<MazeNode>();
 
@@ -51,16 +64,14 @@ public class MazeGenerator : MonoBehaviour
 
         while (completedNodes.Count < nodes.Count)
         {
-            // check nodes next to the current node
             List<int> possibleNextNodes = new List<int>();
             List<int> possibleDirections = new List<int>();
-            
+
             int currentNodeIndex = nodes.IndexOf(currentPath[currentPath.Count - 1]);
             int currentNodeX = currentNodeIndex / mazeSize.y;
             int currentNodeY = currentNodeIndex % mazeSize.y;
 
-            
-            // the right of current node
+            // RIGHT
             if (currentNodeX < size.x - 1)
             {
                 if (!completedNodes.Contains(nodes[currentNodeIndex + size.y]) &&
@@ -70,7 +81,8 @@ public class MazeGenerator : MonoBehaviour
                     possibleNextNodes.Add(currentNodeIndex + size.y);
                 }
             }
-            // check left of current node
+
+            // LEFT
             if (currentNodeX > 0)
             {
                 if (!completedNodes.Contains(nodes[currentNodeIndex - size.y]) &&
@@ -81,9 +93,9 @@ public class MazeGenerator : MonoBehaviour
                 }
             }
 
+            // UP
             if (currentNodeY < size.y - 1)
             {
-                // check node above the current node
                 if (!completedNodes.Contains(nodes[currentNodeIndex + 1]) &&
                     !currentPath.Contains(nodes[currentNodeIndex + 1]))
                 {
@@ -92,9 +104,9 @@ public class MazeGenerator : MonoBehaviour
                 }
             }
 
+            // DOWN
             if (currentNodeY > 0)
             {
-                //check node below current node 
                 if (!completedNodes.Contains(nodes[currentNodeIndex - 1]) &&
                     !currentPath.Contains(nodes[currentNodeIndex - 1]))
                 {
@@ -103,68 +115,86 @@ public class MazeGenerator : MonoBehaviour
                 }
             }
 
-            // choose next node
             if (possibleDirections.Count > 0)
             {
                 int chosenDirection = Random.Range(0, possibleDirections.Count);
                 MazeNode chosenNode = nodes[possibleNextNodes[chosenDirection]];
+                MazeNode current = currentPath[currentPath.Count - 1];
 
+                // Remove walls (visual) + mark open walls for pathfinding
                 switch (possibleDirections[chosenDirection])
                 {
-                    case 1:
-                        chosenNode.RenoveWall(1);
-                        currentPath[currentPath.Count - 1].RenoveWall(0);
+                    case 1: // RIGHT (current -> PosX, chosen -> NegX)
+                        chosenNode.RemoveWall(1);
+                        current.RemoveWall(0);
                         break;
-                    case 2:
-                        chosenNode.RenoveWall(0);
-                        currentPath[currentPath.Count - 1].RenoveWall(1);
+
+                    case 2: // LEFT (current -> NegX, chosen -> PosX)
+                        chosenNode.RemoveWall(0);
+                        current.RemoveWall(1);
                         break;
-                    case 3:
-                        chosenNode.RenoveWall(3);
-                        currentPath[currentPath.Count - 1].RenoveWall(2);
+
+                    case 3: // UP (current -> PosZ, chosen -> NegZ)
+                        chosenNode.RemoveWall(3);
+                        current.RemoveWall(2);
                         break;
-                    case 4:
-                        chosenNode.RenoveWall(2);
-                        currentPath[currentPath.Count - 1].RenoveWall(3);
+
+                    case 4: // DOWN (current -> NegZ, chosen -> PosZ)
+                        chosenNode.RemoveWall(2);
+                        current.RemoveWall(3);
                         break;
-                    
                 }
-                
+
+                // state colors
                 currentPath.Add(chosenNode);
                 chosenNode.SetState(MazeNode.NodeState.Current);
             }
             else
             {
                 completedNodes.Add(currentPath[currentPath.Count - 1]);
-                
                 currentPath[currentPath.Count - 1].SetState(MazeNode.NodeState.Completed);
                 currentPath.RemoveAt(currentPath.Count - 1);
-                
             }
 
             yield return null;
         }
 
+        // ---------------------------
+        // 4. SPAWN PLAYER (same as before)
+        // ---------------------------
         Vector3 startPos = new Vector3(-(mazeSize.x / 2f), 0f, -(mazeSize.y / 2f));
-        GameObject player = Instantiate(playerPrefab, startPos, Quaternion.identity);
+        GameObject playerGO = Instantiate(playerPrefab, startPos, Quaternion.identity);
+        player = playerGO.transform;   // keep reference for AI
 
-        Renderer playerRenderer = player.GetComponent<Renderer>();
+        Renderer playerRenderer = playerGO.GetComponent<Renderer>();
         if (playerRenderer)
-            playerRenderer.material.color = Color.red;
+            playerRenderer.material.color = Color.red; // same as friend
 
         FollowCamera cam = Camera.main.GetComponent<FollowCamera>();
         if (cam)
-            cam.target = player.transform;
+            cam.target = player;
 
-        for (int i = 0; i < numberOfBoosts; i++)
+        // ---------------------------
+        // 5. SPEED BOOSTS (safe)
+        // ---------------------------
+        if (speedBoostPrefab != null)
         {
-            int randomX = Random.Range(0, mazeSize.x);
-            int randomY = Random.Range(0, mazeSize.y);
-            Vector3 pos = new Vector3(randomX - (mazeSize.x / 2f), 0.1f, randomY - (mazeSize.y / 2f));
-            Instantiate(speedBoostPrefab, pos, Quaternion.identity);
+            for (int i = 0; i < numberOfBoosts; i++)
+            {
+                int randomX = Random.Range(0, mazeSize.x);
+                int randomY = Random.Range(0, mazeSize.y);
+                Vector3 pos = new Vector3(randomX - (mazeSize.x / 2f), 0.1f, randomY - (mazeSize.y / 2f));
+                Instantiate(speedBoostPrefab, pos, Quaternion.identity);
+            }
         }
-        
-        // switch to final wall material once the maze is ready
+        else
+        {
+            Debug.LogWarning("SpeedBoostPrefab not assigned – no boosts spawned.");
+        }
+
+        // ---------------------------
+        // 6. FINAL WALL MATERIAL
+        // ---------------------------
         foreach (var node in nodes)
         {
             var renderer = node.GetComponentInChildren<MeshRenderer>();
@@ -172,129 +202,64 @@ public class MazeGenerator : MonoBehaviour
                 renderer.material = wallsMaterial;
         }
 
-        
-        
-    }
-    
-    void GenerateMazeInstant(Vector2Int size)
-    {
-        List<MazeNode> nodes = new List<MazeNode>();
-        for (int x = 0; x < size.x; x++)
+        // ---------------------------
+        // 7. BUILD GRID FOR PATHFINDER
+        // ---------------------------
+        mazeGrid = new MazeNode[mazeSize.x, mazeSize.y];
+        for (int x = 0; x < mazeSize.x; x++)
         {
-            for (int y = 0; y < size.y; y++)
+            for (int y = 0; y < mazeSize.y; y++)
             {
-                Vector3 nodePos = new Vector3(x - (size.x / 2f), 0, y - (size.y / 2f));
-                MazeNode newNode = Instantiate(nodePrefab, nodePos, Quaternion.identity, transform);
-                nodes.Add(newNode);
+                mazeGrid[x, y] = nodes[x * mazeSize.y + y];
             }
-
         }
 
-        List<MazeNode> currentPath = new List<MazeNode>();
-        List<MazeNode> completedNodes = new List<MazeNode>();
+        pathfinder = new Pathfinder(mazeGrid);
 
-        currentPath.Add(nodes[Random.Range(0, nodes.Count)]);
-        //currentPath[0].SetState(MazeNode.NodeState.Current);
-
-        while (completedNodes.Count < nodes.Count)
+        // ---------------------------
+        // 8. SPAWN ENEMY
+        // ---------------------------
+        if (enemyPrefab != null)
         {
-            // check nodes next to the current node
-            List<int> possibleNextNodes = new List<int>();
-            List<int> possibleDirections = new List<int>();
-            
-            int currentNodeIndex = nodes.IndexOf(currentPath[currentPath.Count - 1]);
-            int currentNodeX = currentNodeIndex / mazeSize.y;
-            int currentNodeY = currentNodeIndex % mazeSize.y;
+            MazeNode spawnNode = nodes[Random.Range(0, nodes.Count)];
+            Vector3 epos = spawnNode.transform.position + Vector3.up;
+            GameObject enemy = Instantiate(enemyPrefab, epos, Quaternion.identity);
 
-            
-            // the right of current node
-            if (currentNodeX < size.x - 1)
-            {
-                if (!completedNodes.Contains(nodes[currentNodeIndex + size.y]) &&
-                    !currentPath.Contains(nodes[currentNodeIndex + size.y]))
-                {
-                    possibleDirections.Add(1);
-                    possibleNextNodes.Add(currentNodeIndex + size.y);
-                }
-            }
-            // check left of current node
-            if (currentNodeX > 0)
-            {
-                if (!completedNodes.Contains(nodes[currentNodeIndex - size.y]) &&
-                    !currentPath.Contains(nodes[currentNodeIndex - size.y]))
-                {
-                    possibleDirections.Add(2);
-                    possibleNextNodes.Add(currentNodeIndex - size.y);
-                }
-            }
+            enemyAI = enemy.GetComponent<EnemyAI_Follow>();
+            if (enemyAI != null)
+                enemyAI.SetTarget(player);
+        }
+        else
+        {
+            Debug.LogWarning("EnemyPrefab not assigned – no enemy spawned.");
+        }
 
-            if (currentNodeY < size.y - 1)
-            {
-                // check node above the current node
-                if (!completedNodes.Contains(nodes[currentNodeIndex + 1]) &&
-                    !currentPath.Contains(nodes[currentNodeIndex + 1]))
-                {
-                    possibleDirections.Add(3);
-                    possibleNextNodes.Add(currentNodeIndex + 1);
-                }
-            }
+        // ---------------------------
+        // 9. START A* UPDATE LOOP
+        // ---------------------------
+        if (enemyAI != null)
+            StartCoroutine(UpdateEnemyPath());
+    }
 
-            if (currentNodeY > 0)
-            {
-                //check node below current node 
-                if (!completedNodes.Contains(nodes[currentNodeIndex - 1]) &&
-                    !currentPath.Contains(nodes[currentNodeIndex - 1]))
-                {
-                    possibleDirections.Add(4);
-                    possibleNextNodes.Add(currentNodeIndex - 1);
-                }
-            }
+    IEnumerator UpdateEnemyPath()
+    {
+        while (true)
+        {
+            Vector2Int enemyCell = WorldToCell(enemyAI.transform.position);
+            Vector2Int playerCell = WorldToCell(player.position);
 
-            // choose next node
-            if (possibleDirections.Count > 0)
-            {
-                int chosenDirection = Random.Range(0, possibleDirections.Count);
-                MazeNode chosenNode = nodes[possibleNextNodes[chosenDirection]];
+            List<MazeNode> path = pathfinder.FindPath(enemyCell, playerCell);
+            if (path != null)
+                enemyAI.SetPath(path);
 
-                switch (possibleDirections[chosenDirection])
-                {
-                    case 1:
-                        chosenNode.RenoveWall(1);
-                        currentPath[currentPath.Count - 1].RenoveWall(0);
-                        break;
-                    case 2:
-                        chosenNode.RenoveWall(0);
-                        currentPath[currentPath.Count - 1].RenoveWall(1);
-                        break;
-                    case 3:
-                        chosenNode.RenoveWall(3);
-                        currentPath[currentPath.Count - 1].RenoveWall(2);
-                        break;
-                    case 4:
-                        chosenNode.RenoveWall(2);
-                        currentPath[currentPath.Count - 1].RenoveWall(3);
-                        break;
-                    
-                }
-                
-                currentPath.Add(chosenNode);
-                //chosenNode.SetState(MazeNode.NodeState.Current);
-            }
-            else
-            {
-                completedNodes.Add(currentPath[currentPath.Count - 1]);
-                
-                //currentPath[currentPath.Count - 1].SetState(MazeNode.NodeState.Completed);
-                currentPath.RemoveAt(currentPath.Count - 1);
-                
-            }
-
+            yield return new WaitForSeconds(5f);
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    private Vector2Int WorldToCell(Vector3 p)
     {
-        
+        int x = Mathf.RoundToInt(p.x + mazeSize.x / 2f);
+        int y = Mathf.RoundToInt(p.z + mazeSize.y / 2f);
+        return new Vector2Int(x, y);
     }
 }

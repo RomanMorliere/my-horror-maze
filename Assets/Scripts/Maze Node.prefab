@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 93016655224880283}
   - component: {fileID: 5982260002561539004}
-  - component: {fileID: 7082219947759440962}
   m_Layer: 0
   m_Name: Maze Node
   m_TagString: Untagged
@@ -56,22 +55,6 @@ MonoBehaviour:
   - {fileID: 3663901843745723354}
   - {fileID: 7856593103803608196}
   floor: {fileID: 8203302561077473433}
---- !u!114 &7082219947759440962
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2957130546010529279}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55e55dd11a3bb8740a184491ad11b518, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SonarPulse
-  sonarMaterial: {fileID: -876546973899608171, guid: 25085f6472a109f44a87a1b6ef18fc3e, type: 3}
-  waveSpeed: 10
-  waveWidth: 1
-  activationKey: 32
 --- !u!1 &3663901843745723354
 GameObject:
   m_ObjectHideFlags: 0
@@ -84,7 +67,6 @@ GameObject:
   - component: {fileID: 7330030889798028588}
   - component: {fileID: 7132234608275720946}
   - component: {fileID: 2312510449218419971}
-  - component: {fileID: 2720718733529610508}
   m_Layer: 0
   m_Name: Pos Z Wall
   m_TagString: Untagged
@@ -102,7 +84,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0.5}
-  m_LocalScale: {x: 1.1, y: 1, z: 0.1}
+  m_LocalScale: {x: 1.1, y: 2, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 93016655224880283}
@@ -184,22 +166,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &2720718733529610508
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3663901843745723354}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55e55dd11a3bb8740a184491ad11b518, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SonarPulse
-  sonarMaterial: {fileID: -876546973899608171, guid: 25085f6472a109f44a87a1b6ef18fc3e, type: 3}
-  waveSpeed: 10
-  waveWidth: 1
-  activationKey: 32
 --- !u!1 &3791065530034473839
 GameObject:
   m_ObjectHideFlags: 0
@@ -212,7 +178,6 @@ GameObject:
   - component: {fileID: 2010719172171499471}
   - component: {fileID: 8203302561077473433}
   - component: {fileID: 5026072497309328070}
-  - component: {fileID: 2747747271164307993}
   m_Layer: 0
   m_Name: Floor
   m_TagString: Untagged
@@ -229,7 +194,7 @@ Transform:
   m_GameObject: {fileID: 3791065530034473839}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.5, z: 0}
+  m_LocalPosition: {x: 0, y: -0.05, z: 0}
   m_LocalScale: {x: 1.1, y: 0.1, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -312,22 +277,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &2747747271164307993
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3791065530034473839}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55e55dd11a3bb8740a184491ad11b518, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SonarPulse
-  sonarMaterial: {fileID: -876546973899608171, guid: 25085f6472a109f44a87a1b6ef18fc3e, type: 3}
-  waveSpeed: 10
-  waveWidth: 1
-  activationKey: 32
 --- !u!1 &5569249463233103110
 GameObject:
   m_ObjectHideFlags: 0
@@ -340,7 +289,6 @@ GameObject:
   - component: {fileID: 8892922149642360970}
   - component: {fileID: 6992679632338252009}
   - component: {fileID: 210722402119474359}
-  - component: {fileID: 7490447042730844354}
   m_Layer: 0
   m_Name: Neg X Wall
   m_TagString: Untagged
@@ -358,7 +306,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.5, y: 0, z: 0}
-  m_LocalScale: {x: 0.1, y: 1, z: 1.1}
+  m_LocalScale: {x: 0.1, y: 2, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 93016655224880283}
@@ -440,22 +388,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7490447042730844354
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5569249463233103110}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55e55dd11a3bb8740a184491ad11b518, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SonarPulse
-  sonarMaterial: {fileID: -876546973899608171, guid: 25085f6472a109f44a87a1b6ef18fc3e, type: 3}
-  waveSpeed: 10
-  waveWidth: 1
-  activationKey: 32
 --- !u!1 &6306098972342593035
 GameObject:
   m_ObjectHideFlags: 0
@@ -468,7 +400,6 @@ GameObject:
   - component: {fileID: 7279744176299238807}
   - component: {fileID: 1281403833124675806}
   - component: {fileID: 7794445847604497276}
-  - component: {fileID: 6983046280464185248}
   m_Layer: 0
   m_Name: Pos X Wall
   m_TagString: Untagged
@@ -486,7 +417,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.5, y: 0, z: 0}
-  m_LocalScale: {x: 0.1, y: 1, z: 1.1}
+  m_LocalScale: {x: 0.1, y: 2, z: 1.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 93016655224880283}
@@ -568,22 +499,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &6983046280464185248
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6306098972342593035}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55e55dd11a3bb8740a184491ad11b518, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SonarPulse
-  sonarMaterial: {fileID: -876546973899608171, guid: 25085f6472a109f44a87a1b6ef18fc3e, type: 3}
-  waveSpeed: 10
-  waveWidth: 1
-  activationKey: 32
 --- !u!1 &7856593103803608196
 GameObject:
   m_ObjectHideFlags: 0
@@ -596,7 +511,6 @@ GameObject:
   - component: {fileID: 8607455914378332842}
   - component: {fileID: 4305700800085352156}
   - component: {fileID: 4842943710828677939}
-  - component: {fileID: 857265985201152744}
   m_Layer: 0
   m_Name: Neg Z Wall
   m_TagString: Untagged
@@ -614,7 +528,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -0.5}
-  m_LocalScale: {x: 1.1, y: 1, z: 0.1}
+  m_LocalScale: {x: 1.1, y: 2, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 93016655224880283}
@@ -696,19 +610,3 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &857265985201152744
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7856593103803608196}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55e55dd11a3bb8740a184491ad11b518, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SonarPulse
-  sonarMaterial: {fileID: -876546973899608171, guid: 25085f6472a109f44a87a1b6ef18fc3e, type: 3}
-  waveSpeed: 10
-  waveWidth: 1
-  activationKey: 32
