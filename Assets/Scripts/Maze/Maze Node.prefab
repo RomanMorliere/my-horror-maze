@@ -46,7 +46,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2957130546010529279}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9f85e3c2f4753849ae2b8088438f297, type: 3}
+  m_Script: {fileID: 11500000, guid: 1663391343cb48241a0993ce495bc227, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
   walls:
@@ -55,6 +55,7 @@ MonoBehaviour:
   - {fileID: 3663901843745723354}
   - {fileID: 7856593103803608196}
   floor: {fileID: 8203302561077473433}
+  openWalls: 00000000
 --- !u!1 &3663901843745723354
 GameObject:
   m_ObjectHideFlags: 0
