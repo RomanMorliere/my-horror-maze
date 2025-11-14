@@ -12,6 +12,10 @@ public class MazeGenerator : MonoBehaviour
     [SerializeField] int numberOfBoosts = 5;
     [SerializeField] Material wallGenerationMaterial;
     [SerializeField] Material wallsMaterial;
+    
+    [SerializeField] private GameObject exitPrefab;
+    [SerializeField] private float exitYOffset = 0.1f;
+    
     [SerializeField] GameObject enemyPrefab;
 
     // ---- Pathfinding stuff ----
@@ -201,6 +205,10 @@ public class MazeGenerator : MonoBehaviour
             if (renderer != null && wallsMaterial != null)
                 renderer.material = wallsMaterial;
         }
+        
+        // EXIT
+        Vector3 exitPos = new Vector3((mazeSize.x / 2f) - 1, exitYOffset, (mazeSize.y / 2f) - 1);
+        Instantiate(exitPrefab, exitPos, Quaternion.identity);
 
         // ---------------------------
         // 7. BUILD GRID FOR PATHFINDER
