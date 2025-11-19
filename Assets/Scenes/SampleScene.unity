@@ -285,7 +285,7 @@ Light:
   serializedVersion: 11
   m_Type: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 2
+  m_Intensity: 0
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -415,10 +415,12 @@ MonoBehaviour:
   nodePrefab: {fileID: 5982260002561539004, guid: 1c8cbec852464974a8dae577566f936f, type: 3}
   mazeSize: {x: 10, y: 10}
   playerPrefab: {fileID: 4084139022370401464, guid: 4ed22eee4c6c65148bf2b0e13504dcfb, type: 3}
-  speedBoostPrefab: {fileID: 0}
+  speedBoostPrefab: {fileID: 1402471850527599437, guid: b4608b158ec16c143866bcbde8bd7566, type: 3}
   numberOfBoosts: 5
-  wallGenerationMaterial: {fileID: 0}
-  wallsMaterial: {fileID: 0}
+  wallGenerationMaterial: {fileID: 2100000, guid: 0cec9b97ffd17e643be7edd2e44888f0, type: 2}
+  wallsMaterial: {fileID: 2100000, guid: 59467b21b36050446b34621e27b38f35, type: 2}
+  exitPrefab: {fileID: 4459038753782221320, guid: 63d440f9cb670944aa0ca5a4ec086ac2, type: 3}
+  exitYOffset: 0.1
   enemyPrefab: {fileID: 4084139022370401464, guid: 674cbc2d594c30d44b371cb7dce64e22, type: 3}
 --- !u!4 &671640337
 Transform:
