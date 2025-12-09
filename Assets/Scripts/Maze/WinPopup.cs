@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class WinPopup : MonoBehaviour
 {
@@ -7,7 +7,7 @@ public class WinPopup : MonoBehaviour
 
     private void Start()
     {
-        if (panel != null)
+        if (panel != null) 
             panel.SetActive(false);
     }
 
@@ -16,14 +16,18 @@ public class WinPopup : MonoBehaviour
         if (panel != null)
             panel.SetActive(true);
 
-        Time.timeScale = 0f; // pause the game
+        Time.timeScale = 0f; // freeze gameplay
     }
 
-    public void Hide()
+    public void RestartGame()
     {
-        if (panel != null)
-            panel.SetActive(false);
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
 
-        Time.timeScale = 1f; // resume game
+    public void GoToMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("MainMenu");
     }
 }

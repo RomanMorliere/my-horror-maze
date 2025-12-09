@@ -207,7 +207,11 @@ public class MazeGenerator : MonoBehaviour
         }
         
         // EXIT
-        Vector3 exitPos = new Vector3((mazeSize.x / 2f) - 1, exitYOffset, (mazeSize.y / 2f) - 1);
+// Place exit at the top-right corner of the maze
+        float exitX = (mazeSize.x - 1) - (mazeSize.x / 2f);
+        float exitZ = (mazeSize.y - 1) - (mazeSize.y / 2f);
+
+        Vector3 exitPos = new Vector3(exitX, exitYOffset, exitZ);
         Instantiate(exitPrefab, exitPos, Quaternion.identity);
 
         // ---------------------------
@@ -270,4 +274,23 @@ public class MazeGenerator : MonoBehaviour
         int y = Mathf.RoundToInt(p.z + mazeSize.y / 2f);
         return new Vector2Int(x, y);
     }
+
+public Vector3 GetRandomOpenPosition()
+{
+    while (true)
+    {
+        int x = Random.Range(0, mazeSize.x);
+        int y = Random.Range(0, mazeSize.y);
+
+        MazeNode node = mazeGrid[x, y];
+
+        // Ensure cell has at least one open path (not isolated or walls)
+        if (node.openWalls[0] || node.openWalls[1] || node.openWalls[2] || node.openWalls[3])
+        {
+            return node.transform.position + Vector3.up * 0.2f;
+        }
+    }
+}
+
+
 }

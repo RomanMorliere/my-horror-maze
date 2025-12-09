@@ -69,4 +69,14 @@ public class EnemyAI_Follow : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, goalRot, turnSpeed * Time.deltaTime);
         }
     }
+    
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.CompareTag("Player"))
+        {
+            Debug.Log("⚠️ Enemy caught the player!");
+            GameManager.Instance.PlayerCaught();
+        }
+    }
+
 }

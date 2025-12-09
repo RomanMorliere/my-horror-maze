@@ -4,10 +4,16 @@ public class MazeNode : MonoBehaviour
 {
     public enum NodeState
     {
+        Wall,       // <--- Added this so we can detect non-walkable nodes
         Available,
         Current,
         Completed
     }
+
+    [Header("Node Info")]
+    public NodeState state = NodeState.Wall; // <--- This stores the current state
+
+    public bool IsWalkable => state != NodeState.Wall;
 
     [SerializeField] public GameObject[] walls;
     [SerializeField] MeshRenderer floor;
@@ -26,10 +32,16 @@ public class MazeNode : MonoBehaviour
         openWalls[wallToRemove] = true;
     }
 
-    public void SetState(NodeState state)
+    public void SetState(NodeState newState)
     {
-        switch (state)
+        state = newState; // <---- This was missing before
+
+        switch (newState)
         {
+            case NodeState.Wall:
+                floor.material.color = Color.gray;
+                break;
+
             case NodeState.Available:
                 floor.material.color = Color.white;
                 break;

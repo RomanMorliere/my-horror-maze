@@ -2,14 +2,15 @@ using UnityEngine;
 
 public class MazeExit : MonoBehaviour
 {
-    [SerializeField] private WinPopup winPopup;
+    [SerializeField] private GameObject winPanel;
 
     private void OnTriggerEnter(Collider other)
     {
-        PlayerController player = other.GetComponent<PlayerController>();
-        if (player != null && winPopup != null)
+        if (other.CompareTag("Player"))
         {
-            winPopup.Show();
+            Debug.Log("YOU WON!");
+            winPanel.SetActive(true);
+            Time.timeScale = 0f;
         }
     }
 }
