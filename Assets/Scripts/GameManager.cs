@@ -22,6 +22,11 @@ public class GameManager : MonoBehaviour
     public GameObject losePanel;
     public GameObject winPanel;   // ⭐ ADD THIS
 
+
+public Transform exitTransform; // reference set by MazeGenerator
+public float minRespawnDistanceFromExit = 5f;
+
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -73,15 +78,19 @@ public class GameManager : MonoBehaviour
         RespawnPlayer();
     }
 
-    void RespawnPlayer()
-    {
-        Debug.Log("🔄 Respawning player...");
+void RespawnPlayer()
+{
+    Debug.Log("🔄 Respawning player...");
 
-        Vector3 randomCell = mazeGenerator.GetRandomOpenPosition();
-        randomCell.y = player.position.y;
+    Vector3 newPos = mazeGenerator.GetSafeRespawnPosition(
+        enemy: FindObjectOfType<EnemyAI_Follow>().transform,
+        player: player
+    );
 
-        player.position = randomCell;
-    }
+    newPos.y = player.position.y;
+    player.position = newPos;
+}
+
 
     void UpdateHeartsUI()
     {

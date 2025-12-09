@@ -212,7 +212,9 @@ public class MazeGenerator : MonoBehaviour
         float exitZ = (mazeSize.y - 1) - (mazeSize.y / 2f);
 
         Vector3 exitPos = new Vector3(exitX, exitYOffset, exitZ);
-        Instantiate(exitPrefab, exitPos, Quaternion.identity);
+        GameObject exit = Instantiate(exitPrefab, exitPos, Quaternion.identity);
+GameManager.Instance.exitTransform = exit.transform;   // ⭐ store exit reference
+
 
         // ---------------------------
         // 7. BUILD GRID FOR PATHFINDER
@@ -275,7 +277,7 @@ public class MazeGenerator : MonoBehaviour
         return new Vector2Int(x, y);
     }
 
-public Vector3 GetRandomOpenPosition()
+public Vector3 GetSafeRespawnPosition(Transform enemy, Transform player, float minDistance = 5f)
 {
     while (true)
     {
@@ -284,13 +286,34 @@ public Vector3 GetRandomOpenPosition()
 
         MazeNode node = mazeGrid[x, y];
 
-        // Ensure cell has at least one open path (not isolated or walls)
-        if (node.openWalls[0] || node.openWalls[1] || node.openWalls[2] || node.openWalls[3])
+        // Must have at least one open wall (walkable)
+        bool isOpen = node.openWalls[0] || node.openWalls[1] || node.openWalls[2] || node.openWalls[3];
+        if (!isOpen) continue;
+
+        Vector3 pos = node.transform.position + Vector3.up * 0.2f;
+
+        // -------- 1️⃣ Avoid enemy ----------
+        if (enemy != null && Vector3.Distance(pos, enemy.position) < minDistance)
+            continue;
+
+        // -------- 2️⃣ Avoid player's previous position ----------
+        if (Vector3.Distance(pos, player.position) < 3f)
+            continue;
+
+        // -------- 3️⃣ Avoid EXIT ----------
+        if (GameManager.Instance.exitTransform != null)
         {
-            return node.transform.position + Vector3.up * 0.2f;
+            float distToExit = Vector3.Distance(pos, GameManager.Instance.exitTransform.position);
+
+            if (distToExit < GameManager.Instance.minRespawnDistanceFromExit)
+                continue;  // too close to exit → try another cell
         }
+
+        return pos;
     }
 }
+
+
 
 
 }
