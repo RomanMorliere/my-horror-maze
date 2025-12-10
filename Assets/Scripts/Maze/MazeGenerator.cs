@@ -9,12 +9,13 @@ public class MazeGenerator : MonoBehaviour
     [SerializeField] Vector2Int mazeSize;
     [SerializeField] GameObject playerPrefab;
     [SerializeField] GameObject speedBoostPrefab;
-    [SerializeField] int numberOfBoosts = 5;
+    [SerializeField] GameObject shieldPrefab;
+    [SerializeField] int numberOfBoosts = 15;
     [SerializeField] Material wallGenerationMaterial;
     [SerializeField] Material wallsMaterial;
     [Header("Reveal Boost")]
-[SerializeField] private GameObject revealBoostPrefab; // Drag your RevealBoost Prefab here in the Inspector!
-[SerializeField] private int numberOfRevealBoosts = 3;
+    [SerializeField] private GameObject revealBoostPrefab; // Drag your RevealBoost Prefab here in the Inspector!
+    [SerializeField] private int numberOfRevealBoosts = 3;
     [SerializeField] private GameObject exitPrefab;
     [SerializeField] private float exitYOffset = 0.1f;
     
@@ -181,44 +182,38 @@ public class MazeGenerator : MonoBehaviour
             cam.target = player;
 
         // ---------------------------
-        // 5. SPEED BOOSTS (safe)
+        // 5. SPEED BOOSTS/ REVEAL BOOSTS / SHIELD (safe)
         // ---------------------------
-        if (speedBoostPrefab != null)
+        if (speedBoostPrefab != null && revealBoostPrefab != null && shieldPrefab != null)
         {
             for (int i = 0; i < numberOfBoosts; i++)
             {
                 int randomX = Random.Range(0, mazeSize.x);
                 int randomY = Random.Range(0, mazeSize.y);
                 Vector3 pos = new Vector3(randomX - (mazeSize.x / 2f), 0.1f, randomY - (mazeSize.y / 2f));
-                Instantiate(speedBoostPrefab, pos, Quaternion.identity);
+                if (i < 5)
+                {
+                    
+                    Instantiate(speedBoostPrefab, pos, Quaternion.identity);
+                }
+                else if (i < 10)
+                {
+                    Instantiate(revealBoostPrefab, pos, Quaternion.identity);
+
+                }
+                else if (i < 15)
+                {
+                    Instantiate(shieldPrefab, pos, Quaternion.identity);
+
+                }
+                
             }
         }
         else
         {
-            Debug.LogWarning("SpeedBoostPrefab not assigned – no boosts spawned.");
+            Debug.LogWarning("Boosts not assigned – no boosts spawned.");
         }
-
-
-if (revealBoostPrefab != null)
-{
-    for (int i = 0; i < numberOfRevealBoosts; i++)
-    {
-        // Get a random X and Y coordinate within the maze grid
-        int randomX = Random.Range(0, mazeSize.x);
-        int randomY = Random.Range(0, mazeSize.y);
         
-        // Calculate the world position of the random node/cell
-        Vector3 pos = new Vector3(randomX - (mazeSize.x / 2f), 0.1f, randomY - (mazeSize.y / 2f));
-        
-        // Create the boost object in the scene
-        Instantiate(revealBoostPrefab, pos, Quaternion.identity, transform); // Set parent for organization
-    }
-}
-else
-{
-    Debug.LogWarning("⚠️ RevealBoostPrefab not assigned – no shadow reveal boosts spawned.");
-}
-
         // ---------------------------
         // 6. FINAL WALL MATERIAL
         // ---------------------------

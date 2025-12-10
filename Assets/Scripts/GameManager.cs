@@ -66,15 +66,18 @@ public float minRespawnDistanceFromExit = 5f;
     // -------------------------------------
     public void PlayerCaught()
     {
-        lives--;
-        UpdateHeartsUI();
-
-        if (lives <= 0)
+        PlayerController p = FindFirstObjectByType<PlayerController>();
+        if (p && p.IsInvincible == false)
         {
-            LoseGame();
-            return;
+            lives--;
+            UpdateHeartsUI();
+            
+            if (lives <= 0)
+            {
+                LoseGame();
+                return;
+            }
         }
-
         RespawnPlayer();
     }
 

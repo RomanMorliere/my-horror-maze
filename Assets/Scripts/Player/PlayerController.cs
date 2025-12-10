@@ -4,8 +4,7 @@ using System.Collections;
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour
 {
-    [Header("Movement Settings")]
-    public float moveSpeed = 5f;
+    [Header("Movement Settings")] public float moveSpeed = 5f;
     public float fixedY = 0.5f;
 
     private Rigidbody rb;
@@ -13,6 +12,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 moveVelocity;
 
     public bool IsBoosted { get; private set; } = false;
+    public bool IsInvincible { get; private set; } = false;
 
     void Start()
     {
@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour
         transform.rotation = Quaternion.identity;
     }
 
-    void FixedUpdate()
+    void FixedUpdate()          
     {
         rb.linearVelocity = new Vector3(moveVelocity.x, 0f, moveVelocity.z);
         rb.position = new Vector3(rb.position.x, fixedY, rb.position.z);
@@ -60,4 +60,23 @@ public class PlayerController : MonoBehaviour
         IsBoosted = false;
         rend.material.color = originalColor;
     }
+
+    public IEnumerator ApplySheild(float shieldDuration)
+    {
+        if (IsInvincible)
+        {
+            yield break;
+        }
+
+        IsInvincible = true;
+
+        Renderer rend = GetComponent<Renderer>();
+        Color originalColor = rend.material.color;
+        rend.material.color = Color.blue;
+        yield return new WaitForSeconds(shieldDuration);
+
+        IsInvincible = false;
+        rend.material.color = originalColor;
+    }
+
 }
