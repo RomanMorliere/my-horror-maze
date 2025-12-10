@@ -12,7 +12,9 @@ public class MazeGenerator : MonoBehaviour
     [SerializeField] int numberOfBoosts = 5;
     [SerializeField] Material wallGenerationMaterial;
     [SerializeField] Material wallsMaterial;
-    
+    [Header("Reveal Boost")]
+[SerializeField] private GameObject revealBoostPrefab; // Drag your RevealBoost Prefab here in the Inspector!
+[SerializeField] private int numberOfRevealBoosts = 3;
     [SerializeField] private GameObject exitPrefab;
     [SerializeField] private float exitYOffset = 0.1f;
     
@@ -196,6 +198,27 @@ public class MazeGenerator : MonoBehaviour
             Debug.LogWarning("SpeedBoostPrefab not assigned – no boosts spawned.");
         }
 
+
+if (revealBoostPrefab != null)
+{
+    for (int i = 0; i < numberOfRevealBoosts; i++)
+    {
+        // Get a random X and Y coordinate within the maze grid
+        int randomX = Random.Range(0, mazeSize.x);
+        int randomY = Random.Range(0, mazeSize.y);
+        
+        // Calculate the world position of the random node/cell
+        Vector3 pos = new Vector3(randomX - (mazeSize.x / 2f), 0.1f, randomY - (mazeSize.y / 2f));
+        
+        // Create the boost object in the scene
+        Instantiate(revealBoostPrefab, pos, Quaternion.identity, transform); // Set parent for organization
+    }
+}
+else
+{
+    Debug.LogWarning("⚠️ RevealBoostPrefab not assigned – no shadow reveal boosts spawned.");
+}
+
         // ---------------------------
         // 6. FINAL WALL MATERIAL
         // ---------------------------
@@ -311,9 +334,59 @@ public Vector3 GetSafeRespawnPosition(Transform enemy, Transform player, float m
 
         return pos;
     }
+
+    
+    
 }
 
 
+public IEnumerator RevealWalls(float duration)
+{
+    Debug.Log($"💡 Starting wall reveal for {duration} seconds. (Shadows OFF)");
+    
+    // --- 1. Turn shadows OFF ---
+    foreach (var node in mazeGrid)
+    {
+        foreach (var wall in node.walls)
+        {
+            if (wall.activeSelf)
+            {
+                // Use GetComponentInChildren for safety
+                var renderer = wall.GetComponentInChildren<MeshRenderer>(); 
+                
+                if (renderer != null)
+                {
+                    // ⭐ CONFIRM RECEIVE SHADOWS IS THE TARGET PROPERTY
+                    renderer.receiveShadows = false; 
+                    // ⭐ NEW: FORCE ALL SHADOWS OFF, just in case (casting shadows)
+                    renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                }
+            }
+        }
+    }
 
+    // --- 2. Wait for the boost duration ---
+    yield return new WaitForSeconds(duration);
+
+    Debug.Log("🌑 Ending wall reveal. Shadows back ON.");
+    
+    // --- 3. Turn shadows back ON ---
+    foreach (var node in mazeGrid)
+    {
+        foreach (var wall in node.walls)
+        {
+            if (wall.activeSelf)
+            {
+                var renderer = wall.GetComponentInChildren<MeshRenderer>();
+                if (renderer != null)
+                {
+                    renderer.receiveShadows = true; 
+                    // ⭐ Restore SHADOW CASTING
+                    renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+                }
+            }
+        }
+    }
+}
 
 }

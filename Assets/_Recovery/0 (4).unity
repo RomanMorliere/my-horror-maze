@@ -975,7 +975,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   nodePrefab: {fileID: 5982260002561539004, guid: 1c8cbec852464974a8dae577566f936f, type: 3}
-  mazeSize: {x: 20, y: 20}
+  mazeSize: {x: 5, y: 5}
   playerPrefab: {fileID: 4084139022370401464, guid: 4ed22eee4c6c65148bf2b0e13504dcfb, type: 3}
   speedBoostPrefab: {fileID: 1402471850527599437, guid: b4608b158ec16c143866bcbde8bd7566, type: 3}
   numberOfBoosts: 5
