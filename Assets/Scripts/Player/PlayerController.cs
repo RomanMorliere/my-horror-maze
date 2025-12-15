@@ -14,6 +14,12 @@ public class PlayerController : MonoBehaviour
     public int revealCharges = 0;
     public int speedCharges = 0;
 
+[Header("Audio (Drag your sounds here)")]
+public AudioSource hammerSFX;
+public AudioSource speedSFX;
+public AudioSource shieldSFX;
+public AudioSource revealSFX;
+
     [Header("Boost Durations")]
     public float shieldDuration = 5f;
     public float revealDuration = 3f;
@@ -54,32 +60,36 @@ public class PlayerController : MonoBehaviour
     }
 
         // 2. USE BOOSTS WITH KEYS
-        
-        // SPACE -> Break Wall
-        if (Input.GetKeyDown(KeyCode.Space) && wallBreakerCharges > 0)
-        {
-            TryBreakWall();
-        }
-
-        // Q -> Use Shield
-        if (Input.GetKeyDown(KeyCode.Q) && shieldCharges > 0 && !IsInvincible)
-        {
-            shieldCharges--;
-            StartCoroutine(ApplySheild(shieldDuration));
-        }
-
-        // E -> Use Reveal
-        if (Input.GetKeyDown(KeyCode.E) && revealCharges > 0)
-        {
-            revealCharges--;
-            MazeGenerator gen = Object.FindFirstObjectByType<MazeGenerator>();
-            if (gen != null) StartCoroutine(gen.RevealWalls(revealDuration));
-        }
-
-        if (Input.GetKeyDown(KeyCode.R) && speedCharges > 0 && !IsBoosted)
+// SPACE -> Break Wall
+    if (Input.GetKeyDown(KeyCode.Space) && wallBreakerCharges > 0)
     {
+        if (hammerSFX != null) hammerSFX.Play(); // Plays Hammer Sound
+        TryBreakWall();
+    }
+
+    // R -> Use Speed Boost
+    if (Input.GetKeyDown(KeyCode.R) && speedCharges > 0 && !IsBoosted)
+    {
+        if (speedSFX != null) speedSFX.Play(); // Plays Speed Sound
         speedCharges--;
-        StartCoroutine(ApplySpeedBoost(2f, 5f)); // Speed multiplier and duration
+        StartCoroutine(ApplySpeedBoost(2f, 5f));
+    }
+
+    // Q -> Use Shield
+    if (Input.GetKeyDown(KeyCode.Q) && shieldCharges > 0 && !IsInvincible)
+    {
+        if (shieldSFX != null) shieldSFX.Play(); // Plays Shield Sound
+        shieldCharges--;
+        StartCoroutine(ApplySheild(shieldDuration));
+    }
+
+    // E -> Use Reveal
+    if (Input.GetKeyDown(KeyCode.E) && revealCharges > 0)
+    {
+        if (revealSFX != null) revealSFX.Play(); // Plays Reveal Sound
+        revealCharges--;
+        MazeGenerator gen = Object.FindFirstObjectByType<MazeGenerator>();
+        if (gen != null) StartCoroutine(gen.RevealWalls(revealDuration));
     }
     }
 
