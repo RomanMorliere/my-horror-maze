@@ -758,6 +758,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb50061bb5e1f834e9bd3f73e9eac204, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  levels:
+  - mazeSize: {x: 5, y: 5}
+    numberOfBoosts: 10
+  - mazeSize: {x: 10, y: 10}
+    numberOfBoosts: 15
+  - mazeSize: {x: 20, y: 20}
+    numberOfBoosts: 15
   hearts:
   - {fileID: 1728948013}
   - {fileID: 1942961511}
