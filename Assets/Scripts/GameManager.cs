@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
+private PlayerController cachedPlayer;
 
     [Header("UI Hearts")]
     public List<Image> hearts = new List<Image>();
@@ -136,4 +137,25 @@ void RespawnPlayer()
         Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenu");
     }
+
+    // Add this to GameManager.cs
+public Text boostStatusText; 
+void Update() 
+{
+    if (boostStatusText != null) 
+    {
+        if (cachedPlayer == null) cachedPlayer = FindFirstObjectByType<PlayerController>();
+
+        if (cachedPlayer != null) 
+        {
+            boostStatusText.text = 
+                "<size=14><b>INVENTORY : </b></size>\n\n" +
+                $"<color=#FFF700><b>    [ R ]</b></color> Speed:  <b>{cachedPlayer.speedCharges}</b>\n" + // ⭐ NEW LINE
+                $"<color=#FF00BB><b>    [SPACE]</b></color> Hammer: <b>{cachedPlayer.wallBreakerCharges}</b>\n" +
+                $"<color=#6780FF><b>    [ Q ]</b></color> Shield: <b>{cachedPlayer.shieldCharges}</b>\n" +
+                $"<color=#0054FF><b>    [ E ]</b></color> Reveal: <b>{cachedPlayer.revealCharges}</b>";
+        }
+    }
+}
+
 }

@@ -18,7 +18,7 @@ public class MazeGenerator : MonoBehaviour
     [SerializeField] private int numberOfRevealBoosts = 3;
     [SerializeField] private GameObject exitPrefab;
     [SerializeField] private float exitYOffset = 0.1f;
-    
+    [SerializeField] GameObject hammerPrefab; // Drag your BreakWall prefab here in Inspector
     [SerializeField] GameObject enemyPrefab;
 
     // ---- Pathfinding stuff ----
@@ -28,9 +28,10 @@ public class MazeGenerator : MonoBehaviour
     private Transform player;
 
     private void Start()
-    {
-        StartCoroutine(GenerateMaze(mazeSize));
-    }
+{
+    Time.timeScale = 1f; // Force the game to run
+    StartCoroutine(GenerateMaze(mazeSize));
+}
 
     IEnumerator GenerateMaze(Vector2Int size)
     {
@@ -128,29 +129,29 @@ public class MazeGenerator : MonoBehaviour
                 MazeNode chosenNode = nodes[possibleNextNodes[chosenDirection]];
                 MazeNode current = currentPath[currentPath.Count - 1];
 
-                // Remove walls (visual) + mark open walls for pathfinding
-                switch (possibleDirections[chosenDirection])
-                {
-                    case 1: // RIGHT (current -> PosX, chosen -> NegX)
-                        chosenNode.RemoveWall(1);
-                        current.RemoveWall(0);
-                        break;
+               // Inside IEnumerator GenerateMaze in MazeGenerator.cs
+switch (possibleDirections[chosenDirection])
+{
+    case 1: // RIGHT
+        current.RemoveWall(0);    // Remove current's Right wall
+        chosenNode.RemoveWall(1); // Remove neighbor's Left wall ⭐
+        break;
 
-                    case 2: // LEFT (current -> NegX, chosen -> PosX)
-                        chosenNode.RemoveWall(0);
-                        current.RemoveWall(1);
-                        break;
+    case 2: // LEFT
+        current.RemoveWall(1);    // Remove current's Left wall
+        chosenNode.RemoveWall(0); // Remove neighbor's Right wall ⭐
+        break;
 
-                    case 3: // UP (current -> PosZ, chosen -> NegZ)
-                        chosenNode.RemoveWall(3);
-                        current.RemoveWall(2);
-                        break;
+    case 3: // UP
+        current.RemoveWall(2);    // Remove current's Up wall
+        chosenNode.RemoveWall(3); // Remove neighbor's Down wall ⭐
+        break;
 
-                    case 4: // DOWN (current -> NegZ, chosen -> PosZ)
-                        chosenNode.RemoveWall(2);
-                        current.RemoveWall(3);
-                        break;
-                }
+    case 4: // DOWN
+        current.RemoveWall(3);    // Remove current's Down wall
+        chosenNode.RemoveWall(2); // Remove neighbor's Up wall ⭐
+        break;
+}
 
                 // state colors
                 currentPath.Add(chosenNode);
@@ -182,36 +183,22 @@ public class MazeGenerator : MonoBehaviour
             cam.target = player;
 
         // ---------------------------
-        // 5. SPEED BOOSTS/ REVEAL BOOSTS / SHIELD (safe)
+        // 5. BOOST SPAWNING (Updated)
         // ---------------------------
-        if (speedBoostPrefab != null && revealBoostPrefab != null && shieldPrefab != null)
+        for (int i = 0; i < 20; i++) // Increased total to fit the 4th boost type
         {
-            for (int i = 0; i < numberOfBoosts; i++)
-            {
-                int randomX = Random.Range(0, mazeSize.x);
-                int randomY = Random.Range(0, mazeSize.y);
-                Vector3 pos = new Vector3(randomX - (mazeSize.x / 2f), 0.1f, randomY - (mazeSize.y / 2f));
-                if (i < 5)
-                {
-                    
-                    Instantiate(speedBoostPrefab, pos, Quaternion.identity);
-                }
-                else if (i < 10)
-                {
-                    Instantiate(revealBoostPrefab, pos, Quaternion.identity);
+            int randomX = Random.Range(0, mazeSize.x);
+            int randomY = Random.Range(0, mazeSize.y);
+            Vector3 pos = new Vector3(randomX - (mazeSize.x / 2f), 0.1f, randomY - (mazeSize.y / 2f));
 
-                }
-                else if (i < 15)
-                {
-                    Instantiate(shieldPrefab, pos, Quaternion.identity);
-
-                }
-                
-            }
-        }
-        else
-        {
-            Debug.LogWarning("Boosts not assigned – no boosts spawned.");
+            if (i < 5 && speedBoostPrefab != null)
+                Instantiate(speedBoostPrefab, pos, Quaternion.identity);
+            else if (i < 10 && revealBoostPrefab != null)
+                Instantiate(revealBoostPrefab, pos, Quaternion.identity);
+            else if (i < 15 && shieldPrefab != null)
+                Instantiate(shieldPrefab, pos, Quaternion.identity);
+            else if (i < 20 && hammerPrefab != null) // ⭐ ADD THIS LINE
+                Instantiate(hammerPrefab, pos, Quaternion.identity);
         }
         
         // ---------------------------
